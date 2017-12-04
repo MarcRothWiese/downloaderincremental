@@ -1,0 +1,18 @@
+.display-money {
+    font-weight: 700 !important;
+    color: gold !important;
+}
+
+.display-time {
+    font-weight: 700 !important;
+    color: lightblue !important;
+}
+
+.display-caffeine {
+    font-weight: 700 !important;
+    color: lightcoral !important;
+}
+
+.upgrade {
+    color: black;
+}

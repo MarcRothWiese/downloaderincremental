@@ -1,0 +1,84 @@
+<script type="text/x-template" id="file-display">
+<div class="col-lg-12">
+    <h1>{{ file.name }}</h1>
+    <p>{{ file.description }} Rewards ¤{{ file.download_reward }} when downloaded. ({{ file.size }} KB)</p>
+    <div class="progress">
+        <div class="progress-bar" 
+            role="progressbar"
+            :class="{ 'progress-bar-striped': file.current_speed > (file.size / 2), active: file.current_speed > (file.size / 2), 'progress-bar-danger': !(file.active_download || file.passive_download) }"
+            :aria-valuenow="file.current_progress_pc()" 
+            aria-valuemin="0" 
+            aria-value-max="100" 
+            :style="'width: ' + file.current_progress_pc() + '%;'">
+            {{ file.current_progress.toFixed(2) }} / {{ file.size }} ({{ file.current_speed.toFixed(2) }} KB/s)
+        </div>
+    </div>
+    <button class="btn btn-primary" 
+    v-on:mousedown="startDownload"
+    v-on:mouseup="stopDownload">
+    Download
+    </button>
+</div>
+</script>
+
+<script type="text/x-template" id="upgrade-display">
+    <div class="list-group-item upgrade">
+        <h4>{{ upgrade.name }}</h4>
+        <p>{{ upgrade.description }} 
+            <span class="badge" v-if="upgrade.cost > 0">¤{{ upgrade.cost }}</span>
+            <span class="badge" v-if="upgrade.time > 0"><span class="glyphicon glyphicon-time"></span>{{ upgrade.time }}</span>
+        </p>
+        <button class="btn btn-warning" v-on:click="buyEquipment(upgrade)" :disabled="company.money < upgrade.cost">Purchase</button>
+    </div>
+</script>
+
+<script type="text/x-template" id="alert-display">
+    <div class="alert alert-info">
+        <strong>{{ alert.speaker }}</strong> {{ alert.text }}
+    </div>
+</script>
+
+<html>
+    <head>
+        <title>Downloader Incremental - v0.0.0001</title>
+        <meta charset="UTF-8">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link href="style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div id="game" class="container-fluid">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <span class="navbar-brand">Downloader Incremental</span>
+                    <money-display :money="company.money"></money-display>
+                    <span v-if="events.show_time"><time-display :time="company.time"></time-display></span>
+                    <span v-if="events.show_caffeine"><caffeine-display :caffeine="company.caffeine"></caffeine-display></span>
+                </div>
+            </nav>
+
+            <div class="row">
+            </div>
+
+            <div class="col-md-6">
+                <div class="row">
+                    <file-display v-for="(file, index) in files" :key="file.id" :file="file" :index="index"></file-display>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="list-group">
+                    <upgrade-display 
+                        v-for="upgrade in upgrades" 
+                        v-if="!upgrade.purchased"
+                        :key="upgrade.name" 
+                        :upgrade="upgrade"
+                        :company="company">
+                    </upgrade-display>
+                </div>
+                <alert-display v-for="alert in alerts" :alert="alert"></alert-display>
+            </div>
+        </div>
+
+        <script src="https://unpkg.com/vue"></script>
+        <script src="game.js"></script>
+    </body>
+</html>
